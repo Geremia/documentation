@@ -190,7 +190,7 @@ Once the form has been submitted, the backend of your website must check whether
 
 ### Preparing Form Data
 
-The backend must remove all fields ignored by mosparo from the submitted form data (see [Ignored Fields](../integration/ignored_fields/)).
+The backend must remove all fields ignored by mosparo from the submitted form data (see [Ignored Fields](../ignored_fields/)).
 
 ### Verifying with a function library
 
@@ -232,7 +232,7 @@ After the form data has been cleaned and sorted, you must create the necessary s
 First, generate a signature of the form data. Convert the form data to a JSON string. Then generate an HMAC hash with the hash algorithm SHA256 and the private API key as the key.
 
 ```php
-$formSignature = hmac_hash('sha256', json_encode($formData), $privateKey);
+$formSignature = hash_hmac('sha256', json_encode($formData), $privateKey);
 ```
 
 :::note
@@ -242,13 +242,13 @@ In the JSON string, empty arrays `[]` should be represented as empty objects `{}
 Then create a signature of the validation token that was transmitted in the form by mosparo.
 
 ```php
-$validationSignature = hmac_hash('sha256', $validationToken, $privateKey);
+$validationSignature = hash_hmac('sha256', $validationToken, $privateKey);
 ```
 
 A verification signature must then be generated, which consists of the validation signature and the form data signature, to make it impossible to change the data.
 
 ```php
-$verificationSignature = hmac_hash('sha256', $validationSignature . $formSignature, $privateKey);
+$verificationSignature = hash_hmac('sha256', $validationSignature . $formSignature, $privateKey);
 ```
 
 You must send these signatures to mosparo with the submission token and the form data.
@@ -266,7 +266,7 @@ $requestData = [
 A request signature is generated, which consists of the API endpoint and the request data as a JSON string, to confirm the authenticity of the request.
 
 ```php
-$requestSignature = hmac_hash('sha256', $apiEndpoint . json_encode($requestData), $privateKey);
+$requestSignature = hash_hmac('sha256', $apiEndpoint . json_encode($requestData), $privateKey);
 ```
 
 #### Send the verification request
